@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import axios from 'axios';
+import Cookie from 'cookie-universal';
+import Loading from '../../Components/Loading';
 import img from './../../Images/img-1.png';
 import logo from './../../Images/img-2.png';
-import Loading from '../../Components/Loading';
 
 export default function Login() {
   // States
@@ -11,20 +12,26 @@ export default function Login() {
     email: '',
     password: '',
   });
+
+  //ERR
   const [err, setErr] = useState('');
+
   // Ref
   const focus = useRef('');
+
+  // Loading
+  const [loading, setLoading] = useState(false);
+
+  // Cookies
+  const cookie = Cookie();
+
+  // Show Password
+  const [open, setOpen] = useState(false);
 
   // Handle Form Change
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
-
-  // Loading
-  const [loading, setLoading] = useState(false);
-
-  // Show Password
-  const [open, setOpen] = useState(false);
 
   // handle toggle
   const toggle = () => {
@@ -41,15 +48,19 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(
-        'https://artery-backend.vercel.app/api/auth/login',
+      const res = await axios.post(
+        'https://artery-backend.vercel.app/api/manger/login',
         {
           email: form.email,
           password: form.password,
         },
       );
       setLoading(false);
-      window.location.pathname = '/home';
+      const token = res.data.token;
+      cookie.set('hospital', token);
+      const role = res.data.user.role;
+      const go = role === "HOSPITAL" ? "home" : "setting";
+      window.location.pathname = `/${go}`;
     } catch (err) {
       setLoading(false);
       if (err.response.status === 400) {
@@ -66,14 +77,14 @@ export default function Login() {
       <div className="landing h-full bg-white bg-cover">
         <div className="container mx-auto sm:px-4">
           <div className="flex h-screen items-center justify-center">
-            <div className="h-[31rem] w-full rounded-2xl  bg-white shadow-[0_0_20px_rgba(0,0,0,0.3)] lg:w-[90%]">
+            <div className="h-[30rem] w-full rounded-2xl  bg-white shadow-[0_0_20px_rgba(0,0,0,0.3)] lg:w-[90%]">
               <div className="relative float-left h-full w-[35%] rounded-l-2xl bg-[#3a3669] max-sm:hidden">
                 <img className="absolute h-full w-full" alt="login" src={img} />
               </div>
               <div className="relative h-full">
                 <div className="flex justify-center">
                   <img
-                    className="mt-7 h-24 max-sm:h-20"
+                    className="mt-7 h-20 max-sm:h-20"
                     alt="logo"
                     src={logo}
                   />
@@ -103,7 +114,7 @@ export default function Login() {
                           type="email"
                           value={form.email}
                           onChange={handleChange}
-                          placeholder="example@gmail.com"
+                          placeholder="Enter Your email"
                           required
                           className="block w-full rounded-lg border-0 bg-[#D9D9D9] px-3 py-2 font-['Nunito'] text-lg font-semibold text-[#4c4c4c] focus:outline-none max-sm:text-base"
                         />
@@ -121,8 +132,8 @@ export default function Login() {
                           type={open === false ? 'password' : 'text'}
                           value={form.password}
                           onChange={handleChange}
-                          placeholder="password..."
-                          minLength="7"
+                          placeholder="Enter Your password"
+                          // minLength="7"
                           required
                           className="block w-full rounded-lg border-0 bg-[#D9D9D9] py-2 pl-3 pr-11 font-['Nunito'] text-lg font-semibold text-[#4c4c4c] focus:outline-none max-sm:text-base"
                         />
@@ -134,7 +145,7 @@ export default function Login() {
                           )}
                         </div>
                       </div>
-                      <div className="mt-6 flex items-center justify-between">
+                      <div className="mt-8 flex items-center justify-between">
                         <span>
                           {err !== '' && (
                             <span className="rounded-lg bg-[#f8d7da] px-4 py-3 text-[#842029]">
@@ -144,7 +155,7 @@ export default function Login() {
                         </span>
                         <button
                           type="submit"
-                          className="rounded-full bg-[#bc233e] px-10 py-2  font-['Urbanist'] text-lg font-semibold uppercase text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:bg-[#C53142] max-sm:px-7 max-sm:text-base"
+                          className="rounded-lg bg-[#bc233e] px-10 py-2  font-['Urbanist'] text-lg font-semibold uppercase text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:bg-[#C53142] max-sm:px-7 max-sm:text-base"
                         >
                           Login
                         </button>

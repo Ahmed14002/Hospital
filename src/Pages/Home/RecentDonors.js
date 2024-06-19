@@ -1,9 +1,22 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useDarkMode } from '../Settings/DarkModeContext';
 import avatar from './../../Images/avatar.png';
 
 export default function RecentDonors() {
   // Dark Mode
   const { dark } = useDarkMode();
+
+  // State to hold donors data
+  const [donors, setDonors] = useState([]);
+
+  // Fetch donors data from API
+  useEffect(() => {
+    axios
+      .get('https://artery-backend.vercel.app/api/Dashborad_manger/Donneurs')
+      .then((response) => setDonors(response.data.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <div
@@ -24,18 +37,32 @@ export default function RecentDonors() {
             </tr>
           </thead>
           <tbody className="flex h-[200px] w-full flex-col items-center justify-between overflow-y-scroll pt-[20px]">
-            {[...Array(20)].map((_, index) => (
-              <tr key={index} className="flex h-10 w-full items-center text-[15px]">
-                <td className="w-[10%] p-4">
-                <img src={avatar} alt="" className="h-[34.08px] w-[46.46px] " />
-              </td>
-              <td className="w-[22.5%] p-4">Ahmed Hamdy</td>
-              <td className="w-[22.5%] p-4">Abokaber</td>
-              <td className="w-[22.5%] p-4">010685074900</td>
-              <td className="w-[22.5%] p-4">A+</td>
+            {donors.length > 0 ? (
+              donors.map((donor, index) => (
+                <tr
+                  key={index}
+                  className="flex h-10 w-full items-center text-[15px]"
+                >
+                  <td className="w-[10%] p-4">
+                    <img
+                      src={avatar}
+                      alt=""
+                      className="h-[34.08px] w-[46.46px]"
+                    />
+                  </td>
+                  <td className="w-[22.5%] p-4">{donor.firstName}</td>
+                  <td className="w-[22.5%] p-4">{donor.city}</td>
+                  <td className="w-[22.5%] p-4">{donor.mobileNumber}</td>
+                  <td className="w-[22.5%] p-4">{donor.bloodGroup}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="py-4 text-center">
+                  No data available
+                </td>
               </tr>
-            ))}
-            
+            )}
           </tbody>
         </table>
       </div>

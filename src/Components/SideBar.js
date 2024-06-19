@@ -15,6 +15,12 @@ const iconClasses =
   'bg-[#f8dbdb] ease-linear duration-200 absolute h-[43px] rounded-md left-[-24px]';
 
 export default function SideBar() {
+  
+  const [expanded, setExpanded] = useState(true);
+  const { pathname } = useLocation();
+  // Dark Mode
+  const { dark } = useDarkMode();
+  
   // Logout button functionality
   async function handleLogout() {
     try {
@@ -24,15 +30,10 @@ export default function SideBar() {
       console.log(err);
     }
   }
-
-  const [expanded, setExpanded] = useState(true);
-  const { pathname } = useLocation();
-  // Dark Mode
-  const { dark } = useDarkMode();
-
+  
   return (
     <div
-      className={`flex flex-col pb-5 pt-4 ${dark === false ? 'bg-gray-50' : 'bg-[#171717]'}`}
+      className={`flex flex-col py-4 ${dark === false ? 'bg-gray-50' : 'bg-[#171717]'}`}
     >
       <div
         className={`flex items-center justify-center gap-4 ${expanded ? 'flex-row px-1 py-3' : 'flex-col p-0'}`}
@@ -85,7 +86,7 @@ export default function SideBar() {
             </span>
             {!expanded && (
               <div
-                className={`invisible absolute left-full ml-6 -translate-x-3 rounded-md
+                className={`invisible absolute z-50 left-full ml-6 -translate-x-3 rounded-md
                 bg-[#f8dbdb] px-2 py-1
                   text-sm text-[#C53142] opacity-20 transition-all
                   group-hover:visible group-hover:translate-x-0 group-hover:opacity-100
@@ -99,10 +100,10 @@ export default function SideBar() {
       </div>
       <div>
         <div
-          className={`flex items-center justify-around gap-4 ${expanded ? 'flex-row px-1 py-3' : 'flex-col p-0'}`}
+          className={`flex items-center justify-around border-t-[3px] ${dark === false ? 'border-[#e5e7eb]' : 'border-[#282727]'} ${expanded ? 'flex-row  gap-4  pt-3' : 'flex-col gap-2 p-0'}`}
         >
           <div
-            className={`flex items-center justify-center overflow-hidden transition-all ${expanded ? 'gap-4' : 'gap-0'}`}
+            className={`flex items-center justify-center overflow-hidden transition-all  ${expanded ? 'gap-4' : 'gap-0 mt-[10px]'}`}
           >
             <img src={avatar} className={`h-10 w-10 rounded-md`} alt="" />
             <h4
