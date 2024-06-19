@@ -58,9 +58,7 @@ export default function Login() {
       setLoading(false);
       const token = res.data.token;
       cookie.set('hospital', token);
-      const role = res.data.user.role;
-      const go = role === "HOSPITAL" ? "home" : "setting";
-      window.location.pathname = `/${go}`;
+      window.location.pathname = "/home";
     } catch (err) {
       setLoading(false);
       if (err.response.status === 400) {
