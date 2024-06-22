@@ -56,8 +56,11 @@ export default function Login() {
         },
       );
       setLoading(false);
-      const token = res.data.token;
+     const token = res.data.token;
+      const role = res.data.data.role; // Assume the role is returned in the response
+     
       cookie.set('hospital', token);
+      localStorage.setItem('role', role); // Store the role in LocalStorage
       window.location.pathname = "/home";
     } catch (err) {
       setLoading(false);
