@@ -15,7 +15,7 @@ const iconClasses =
   'bg-[#f8dbdb] ease-linear duration-200 absolute h-[43px] rounded-md left-[-24px]';
 
 export default function SideBar() {
-  
+  const role = localStorage.getItem('role'); // Get role from LocalStorage
   const [expanded, setExpanded] = useState(true);
   const { pathname } = useLocation();
   // Dark Mode
@@ -61,42 +61,43 @@ export default function SideBar() {
         </button>
       </div>
       <div className="flex-1 px-3 pt-7">
-        {links.map((link, key) => (
-          <Link
-            key={key}
-            to={link.path}
-            className={classNames(
-              pathname === link.path ? 'text-[#C53142]' : 'text-[#999999]',
-              linkClasses,
-            )}
-          >
-            <span
-              className={classNames(
-                pathname === link.path ? 'w-[66px]' : 'w-0',
-                iconClasses,
-              )}
-            ></span>
-            <span className="z-0">{link.icon}</span>
-            <span
-              className={`overflow-hidden transition-all ${
-                expanded ? 'ml-3 w-36' : 'w-0'
-              }`}
-            >
-              {link.name}
-            </span>
-            {!expanded && (
-              <div
-                className={`invisible absolute z-50 left-full ml-6 -translate-x-3 rounded-md
-                bg-[#f8dbdb] px-2 py-1
+        {links.map(
+          (link, key) =>
+            link.role.includes(role) && (
+              <Link
+                key={key}
+                to={link.path}
+                className={classNames(
+                  pathname === link.path ? 'text-[#C53142]' : 'text-[#999999]',
+                  linkClasses,
+                )}
+              >
+                <span
+                  className={classNames(
+                    pathname === link.path ? 'w-[66px]' : 'w-0',
+                    iconClasses,
+                  )}
+                ></span>
+                <span className="z-0">{link.icon}</span>
+                <span
+                  className={`overflow-hidden transition-all ${expanded ? 'ml-3 w-36' : 'w-0'}`}
+                >
+                  {link.name}
+                </span>
+                {!expanded && (
+                  <div
+                    className={`invisible absolute left-full z-50 ml-6 -translate-x-3 rounded-md
+                  bg-[#f8dbdb] px-2 py-1
                   text-sm text-[#C53142] opacity-20 transition-all
                   group-hover:visible group-hover:translate-x-0 group-hover:opacity-100
-                `}
-              >
-                {link.name}
-              </div>
-            )}
-          </Link>
-        ))}
+                  `}
+                  >
+                    {link.name}
+                  </div>
+                )}
+              </Link>
+            ),
+        )}
       </div>
       <div>
         <div
