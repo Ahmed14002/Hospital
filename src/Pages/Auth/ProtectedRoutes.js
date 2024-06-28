@@ -1,35 +1,20 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import Main from './../Main/Main';
+import AccessDenied from './AccessDenied';
+const ProtectedRoute = ({ roles = [] }) => {
+  const { authToken, userRole } = useContext(AuthContext);
 
-export  function ProtectedSettings() {
- const{token} = AuthContext();
- const getRole = () => {
-  if (typeof window !== 'undefined' && localStorage) {
-   return localStorage.getItem('role');
+  if (!authToken) {
+    return <Navigate to="/login" />;
   }
-  return null; 
- };
- 
- const role = getRole();
 
- 
- if (token && role === 'MANGER') {
-   //outlet is used to render the children of the route
-   return <Outlet />
+  if (roles.length > 0 && !roles.includes(userRole)) {
+    return <Navigate to="/access-denied" />;
   }
-  return <Navigate to="/home" replace />;
-}
-export  function ProtectedLogin() {
- const{token} = AuthContext();
- 
- 
 
- 
- if (token.length === 0) {
-   //outlet is used to render the children of the route
-   return <Outlet />
-  }
-  return <Navigate to="/home" replace />;
-}
+  return <Main />;
+};
 
-
+export default ProtectedRoute;
