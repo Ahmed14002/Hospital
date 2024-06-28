@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import axios from 'axios';
 import Cookie from 'cookie-universal';
 import Loading from '../../Components/Loading';
 import img from './../../Images/img-1.png';
 import logo from './../../Images/img-2.png';
+import { AuthContext } from '../../context/AuthContext';
 
 export default function Login() {
+  const { setAuthToken, setUserRole } = useContext(AuthContext);
   // States
   const [form, setForm] = useState({
     email: '',
@@ -56,15 +58,19 @@ export default function Login() {
         },
       );
       setLoading(false);
-     const token = res.data.token;
+      const token = res.data.data.token;
       const role = res.data.data.role; // Assume the role is returned in the response
-     
+      const hospitalId = res.data.data.id; // Assume the hospitalId is returned in the response
+
       cookie.set('hospital', token);
-      localStorage.setItem('role', role); // Store the role in LocalStorage
-      window.location.pathname = "/home";
+      localStorage.setItem('role', role);
+      localStorage.setItem('hospitalId', hospitalId); // Store the hospitalId in LocalStorage
+      setAuthToken(token);
+      setUserRole(role);
+      window.location.pathname = '/home';
     } catch (err) {
       setLoading(false);
-      if (err.response.status === 400) {
+      if (err.response && err.response.status === 400) {
         setErr('Wrong Email Or Password');
       } else {
         setErr('Internal Server ERR');
@@ -75,6 +81,7 @@ export default function Login() {
   return (
     <>
       {loading && <Loading />}
+
       <div className="landing h-full bg-white bg-cover">
         <div className="container mx-auto sm:px-4">
           <div className="flex h-screen items-center justify-center">
@@ -134,7 +141,7 @@ export default function Login() {
                           value={form.password}
                           onChange={handleChange}
                           placeholder="Enter Your password"
-                          // minLength="7"
+                          minLength="8"
                           required
                           className="block w-full rounded-lg border-0 bg-[#D9D9D9] py-2 pl-3 pr-11 font-['Nunito'] text-lg font-semibold text-[#4c4c4c] focus:outline-none max-sm:text-base"
                         />
